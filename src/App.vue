@@ -1,63 +1,75 @@
-<template>
-	<div class="main">
-		<item-list :items="data" class="sidebar" @click="(item) => selectedItem = item"/>
-		<item-content v-if="selectedItem" :item="selectedItem" @click="onClick"/>
-	</div>
-</template>
-
 <script setup lang="ts">
+import { ref } from 'vue';
+import AirList from '@/components/AirList.vue';
+import AirContent from '@/components/AirContent.vue';
+import airData from './data/airData';
 
-import ItemList from './components/ItemList.vue';
-import ItemContent from './components/ItemContent.vue';
-import Data from './components/mockData';
-import {ref} from "vue";
+import { ProductKeys } from './components/types';
+import type { ProductDefaultAttribute } from './components/types';
 
-const data = ref(Data);
+const data = ref(airData);
+const selectedAirItem = ref();
 
+const addAirItem = (value: ProductKeys) => {
+  const defaultFields: ProductDefaultAttribute = {
+    code: 'new code',
+    name: 'new field'
+  };
 
-const selectedItem = ref();
-
-
-const onClick = (value: any) => {
-
-	switch (value) {
-		case 'color': {
-			selectedItem.value?.attributes.push({
-				code: 'new code',
-				name: 'new field',
-				color: 'color'
-			});
-			break;
-		}
-		case 'size': {
-			selectedItem.value?.attributes.push({
-				code: 'new code',
-				name: 'new field',
-				size: {
-					width: 0,
-					height: 0
-				}
-			});
-			break;
-		}
-		case 'weight': {
-			selectedItem.value?.attributes.push({
-				code: 'new code',
-				name: 'new field',
-				weight: 0
-			});
-			break;
-		}
-	}
-}
+  switch (value) {
+    case ProductKeys.color: {
+      selectedAirItem.value?.attributes.push({
+        ...defaultFields,
+        [ProductKeys.color]: 'color'
+      });
+      return;
+    }
+    case ProductKeys.size: {
+      selectedAirItem.value?.attributes.push({
+        ...defaultFields,
+        [ProductKeys.size]: {
+          width: 0,
+          height: 0
+        }
+      });
+      return;
+    }
+    case ProductKeys.weight: {
+      selectedAirItem.value?.attributes.push({
+        ...defaultFields,
+        [ProductKeys.weight]: 0
+      });
+      return;
+    }
+    default: {
+      return null;
+    }
+  }
+};
 </script>
 
-<style scoped lang="css">
-.main {
-	display: flex;
-	gap: 20px;
-}
-.sidebar {
-	width: auto;
+<template>
+  <div class="app">
+    <AirList
+      :items="data"
+      class="app__sidebar"
+      @click="(item) => (selectedAirItem = item)"
+    />
+    <AirContent
+      v-if="selectedAirItem"
+      :item="selectedAirItem"
+      @click="addAirItem"
+    />
+  </div>
+</template>
+
+<style scoped lang="scss">
+.app {
+  display: flex;
+  gap: 20px;
+
+  &__sidebar {
+    width: auto;
+  }
 }
 </style>
